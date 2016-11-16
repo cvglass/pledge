@@ -1,8 +1,8 @@
 {
-  "framework": "jasmine2",
+  "framework": "mocha",
   "src_files": [
     "src/*.js",
-    "utils/*.js",
+    "vendor/bundle.js",
     "test/*.js"
   ]
 }

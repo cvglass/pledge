@@ -1,4 +1,4 @@
-describe('Chapter 3: Rejection Callback Attachment', function(){});
+describe('Chapter 3: Rejection Callback Attachment', function(){
 /*=======================================================
 
 
@@ -19,30 +19,24 @@ a major part of promises working. Rejection is similar;
 finish the "callback aggregation" of promises in this chapter.
 ========================================================*/
 
-/* global defer */
+/* global chai defer */
 
 describe('Another promise', function(){
 
-  var thingDeferral, promiseForThing, log;
-  var logOops = jasmine.createSpy('logOops').and.callFake(function () {
-    log.push({ code: 'oops' });
-  });
-  var logInput = jasmine.createSpy('logInput').and.callFake(function (input) {
-    log.push( input );
-  });
+  var thingDeferral, promiseForThing, log, logOops, logInput;
   beforeEach(function(){
     thingDeferral = defer();
     promiseForThing = thingDeferral.$promise;
     log = [];
-    logOops.calls.reset();
-    logInput.calls.reset();
+    logOops = chai.spy(function () { log.push({ code: 'oops' }); });
+    logInput = chai.spy(function (input) { log.push( input ); });
   });
 
   describe('that is not yet rejected', function(){
 
     xit('does not call error handlers yet', function(){
       promiseForThing.then( null, logOops );
-      expect( logOops ).not.toHaveBeenCalled();
+      expect( logOops ).not.to.have.been.called();
     });
 
   });
@@ -62,32 +56,34 @@ describe('Another promise', function(){
 
     xit('does not call any success handlers', function(){
       promiseForThing.then( logOops );
-      expect( logOops ).not.toHaveBeenCalled();
+      expect( logOops ).not.to.have.been.called();
     });
 
     xit('calls an error handler added by `.then`', function(){
       promiseForThing.then( null, logOops );
-      expect( logOops ).toHaveBeenCalled();
+      expect( logOops ).to.have.been.called();
     });
 
     xit("calls an error handler by passing in the promise's value", function(){
       promiseForThing.then( null, logInput );
-      expect( logInput ).toHaveBeenCalledWith( theReason );
+      expect( logInput ).to.have.been.called.with.exactly( theReason );
     });
 
     xit('calls each error handler once per attachment', function(){
       promiseForThing.then( null, logOops );
       promiseForThing.then( null, logInput );
       promiseForThing.then( null, logInput );
-      expect( logOops.calls.count() ).toBe( 1 );
-      expect( logInput.calls.count() ).toBe( 2 );
-      expect( logInput ).toHaveBeenCalledWith( theReason );
+      /* eslint-disable no-unused-expressions */
+      expect( logOops ).to.have.been.called.once;
+      expect( logInput ).to.have.been.called.twice;
+      /* eslint-enable no-unused-expressions */
+      expect( logInput ).to.have.been.called.always.with.exactly( theReason );
     });
 
     xit('calls each error handler in the order added', function(){
       promiseForThing.then( null, logOops );
       promiseForThing.then( null, logInput );
-      expect( log ).toEqual( [{ code: 'oops'}, {code: 'timed out'}] );
+      expect( log ).to.deep.equal( [{ code: 'oops'}, {code: 'timed out'}] );
     });
 
   });
@@ -99,14 +95,14 @@ describe('Another promise', function(){
     xit('calls that handler when rejected', function(){
       promiseForThing.then( null, logInput );
       thingDeferral.reject( theReason );
-      expect( logInput ).toHaveBeenCalledWith( theReason );
+      expect( logInput ).to.have.been.called.with.exactly( theReason );
     });
 
     xit('calls all its error handlers in order one time when rejected', function(){
       promiseForThing.then( null, logInput );
       promiseForThing.then( null, logOops );
       thingDeferral.reject( theReason );
-      expect( log ).toEqual( [{code: 'unauthorized'}, {code: 'oops'}] );
+      expect( log ).to.deep.equal( [{code: 'unauthorized'}, {code: 'oops'}] );
     });
 
   });
@@ -134,18 +130,18 @@ describe('Another promise', function(){
     // Demonstration — the next two specs should pass already
     xit('can do stuff with fulfilled data', function(){
       thingDeferral.resolve({ animal: 'duckling' });
-      expect( ui.animals[2] ).toBe( 'duckling' );
+      expect( ui.animals[2] ).to.equal( 'duckling' );
     });
 
     xit('can deal with rejection reasons', function(){
       thingDeferral.reject({ message: 'unauthorized' });
-      expect( ui.warning ).toBe( 'unauthorized' );
+      expect( ui.warning ).to.equal( 'unauthorized' );
     });
 
     // Optional but recommended garbage collection
     xit('discards handlers that are no longer needed', function(){
       thingDeferral.resolve({ animal: 'chipmunk' });
-      expect( promiseForThing._handlerGroups ).toEqual( [] );
+      expect( promiseForThing._handlerGroups ).to.deep.equal( [] );
     });
 
   });
@@ -161,13 +157,13 @@ describe("A promise's `.catch` method", function(){
   beforeEach(function(){
      deferral = defer();
      promise = deferral.$promise;
-     spyOn( promise, 'then' ).and.callThrough();
+     chai.spy.on(promise, 'then');
   });
   function myFunc (reason) { console.log(reason); }
 
   xit('attaches the passed-in function as an error handler', function(){
     promise.catch( myFunc );
-    expect( promise.then ).toHaveBeenCalledWith( null, myFunc );
+    expect( promise.then ).to.have.been.called.with.exactly( null, myFunc );
   });
 
   /* This spec will probably already pass at this point, because
@@ -177,16 +173,8 @@ describe("A promise's `.catch` method", function(){
   xit('returns the same kind of thing that .then would', function(){
     var catchReturn = promise.catch( myFunc );
     var thenReturn = promise.then( null, myFunc );
-    // should be very similar (but are not necessarily ===):
-    [catchReturn, thenReturn].forEach(sanitize);
-    expect( catchReturn ).toEqual( thenReturn );
+    expect( catchReturn ).to.deep.equal( thenReturn );
   });
-
-  // Stops Jasmine's `toEqual` from tripping over different constructors.
-  // Not always necessary, but some solutions don't work with normal `toEqual`.
-  function sanitize (val) {
-    if (val && /object|function/.test(typeof val)) delete val.constructor;
-  }
 
 });
 
@@ -197,3 +185,4 @@ chaining actually works. This behavior is what drives promises
 beyond being just portable callback sinks and transforms them
 into dynamic, versatile, powerful, manipulatable machines.
 */
+});

@@ -4,13 +4,13 @@
 
 **Javascript promises** are versatile tools for managing asynchronous results. They are portable and can attach handler functions to an eventual value, in multiple places. Compared to the dead end of standard async callbacks, they restore normal control flow — letting you chain results, `return` new values, and `catch` errors where most convenient.
 
-One way to understand a thing is to build it yourself. This repo contains a [Jasmine 2.0](http://jasmine.github.io/2.0/introduction.html) test spec (split into thematic chapters). Following the spec in order, we will build a deferral-style promise library similar to [AngularJS's `$q` service](https://docs.angularjs.org/api/ng/service/$q) (based on [the `Q` library](https://github.com/kriskowal/q) by Kris Kowal & Domenic Denicola), which we will call `pledge.js`. Our promises will be named `$promise` to avoid triggering browser code. To focus on concepts, `pledge.js` will use public variables and not be standards-compliant (see below).
+One way to understand a thing is to build it yourself. This repo contains a [Mocha](https://mochajs.org/) test spec, using the [Chai](http://chaijs.com/api/bdd/), [Chai-Spies](https://github.com/chaijs/chai-spies), and [Chai-as-Promised](https://github.com/domenic/chai-as-promised) assertion libraries. Following the specs (split into thematic chapters) in order, we will build a deferral-style promise library similar to [AngularJS's `$q` service](https://docs.angularjs.org/api/ng/service/$q) (based on [the `Q` library](https://github.com/kriskowal/q) by Kris Kowal & Domenic Denicola), which we will call `pledge.js`. Our promises will be named `$promise` to avoid triggering browser code. To focus on concepts, `pledge.js` will use public variables and not be standards-compliant (see below).
 
 ## Instructions
 
-You'll need [Node.js](http://nodejs.org) and its package manager `npm` installed. If you already have the [Testem](https://github.com/airportyh/testem) spec runner installed globally, you probably do not need to `npm install`. Doing so however will install Testem locally.
+You'll need [Node.js](http://nodejs.org) and its package manager `npm` installed. Run `npm install` to download the dependencies and also trigger the automatic post-install `npm run build` script.
 
-To execute the spec, simply run `npm test` in the repo directory and open the link displayed in your terminal. You will see all the upcoming tests as "pending" (yellow). Start writing your own code in the `pledge.js` file. When you pass a test (green), change the next pending test from `xit` to `it` and save. This spec is iterative and opinionated; it is recommended that you do the tests in order and not `xit` out any previous specs. For debugging, you can "focus" Jasmine specs/suites with `fit`/`fdescribe`.
+To execute the spec, simply run `npm test` in the repo directory and open the link displayed in your terminal. You will see all the upcoming tests as "pending" (yellow). Start writing your own code in the `pledge.js` file. When you pass a test (green), change the next pending test from `xit` to `it` and save. This spec is iterative and opinionated; it is recommended that you do the tests in order and not `xit` out any previous specs. For debugging, you can isolate Mocha specs/suites with `it.only`/`describe.only`.
 
 ## Associated learning materials
 

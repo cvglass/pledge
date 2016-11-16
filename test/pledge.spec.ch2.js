@@ -1,4 +1,4 @@
-describe('Chapter 2: Fulfillment Callback Attachment', function(){});
+describe('Chapter 2: Fulfillment Callback Attachment', function(){
 /*======================================================
 
 
@@ -20,8 +20,7 @@ used? By completing this chapter, you will learn the
 fundamentals of how promises act on eventual information.
 ========================================================*/
 
-/* global defer */
-/* eslint no-unused-vars: 0 */
+/* global chai defer */
 
 describe("A promise's `.then` method", function(){
 
@@ -30,30 +29,34 @@ describe("A promise's `.then` method", function(){
     deferral = defer();
     promise  = deferral.$promise;
   });
+  /* eslint-disable no-unused-vars */
   function s1 (data)   { /* use data */ }
   function e1 (reason) { /* handle reason */ }
   function s2 (data)   { /* use data */ }
   function e2 (reason) { /* handle reason */ }
+  /* eslint-enable no-unused-vars */
 
   xit('adds groups of handlers (callback functions) to the promise', function(){
     promise.then( s1, e1 );
-    expect( promise._handlerGroups[0].successCb ).toBe( s1 );
-    expect( promise._handlerGroups[0].errorCb   ).toBe( e1 );
+    expect( promise._handlerGroups[0].successCb ).to.equal( s1 );
+    expect( promise._handlerGroups[0].errorCb   ).to.equal( e1 );
   });
 
   xit('can be called multiple times to add more handlers', function(){
     promise.then( s1, e1 );
-    expect( promise._handlerGroups[0].successCb ).toBe( s1 );
-    expect( promise._handlerGroups[0].errorCb   ).toBe( e1 );
+    expect( promise._handlerGroups[0].successCb ).to.equal( s1 );
+    expect( promise._handlerGroups[0].errorCb   ).to.equal( e1 );
     promise.then( s2, e2 );
-    expect( promise._handlerGroups[1].successCb ).toBe( s2 );
-    expect( promise._handlerGroups[1].errorCb   ).toBe( e2 );
+    expect( promise._handlerGroups[1].successCb ).to.equal( s2 );
+    expect( promise._handlerGroups[1].errorCb   ).to.equal( e2 );
   });
 
   xit('attaches a falsy value in place of non-function success or error callbacks', function(){
     promise.then( 'a string', {} );
-    expect( promise._handlerGroups[0].successCb ).toBeFalsy();
-    expect( promise._handlerGroups[0].errorCb   ).toBeFalsy();
+    /* eslint-disable no-unused-expressions */
+    expect( promise._handlerGroups[0].successCb ).to.not.be.ok; // aka falsy
+    expect( promise._handlerGroups[0].errorCb   ).to.not.be.ok; // aka falsy
+    /* eslint-enable no-unused-expressions */
   });
 
 });
@@ -61,22 +64,20 @@ describe("A promise's `.then` method", function(){
 // Getting to the main functionality
 describe('A promise', function(){
 
-  var numDeferral, promiseForNum, foo;
-  var setFoo10 = jasmine.createSpy('setFoo10').and.callFake(function () { foo = 10; });
-  var addToFoo = jasmine.createSpy('addToFoo').and.callFake(function (num) { foo += num; });
+  var numDeferral, promiseForNum, foo, setFoo10, addToFoo;
   beforeEach(function(){
     numDeferral = defer();
     promiseForNum = numDeferral.$promise;
     foo = 0;
-    setFoo10.calls.reset();
-    addToFoo.calls.reset();
+    setFoo10 = chai.spy(function () { foo = 10; });
+    addToFoo = chai.spy(function (num) { foo += num; });
   });
 
   describe('that is not yet fulfilled', function(){
 
     xit('does not call any success handlers yet', function(){
       promiseForNum.then( setFoo10 );
-      expect( setFoo10 ).not.toHaveBeenCalled();
+      expect( setFoo10 ).not.to.have.been.called();
     });
 
   });
@@ -91,28 +92,30 @@ describe('A promise', function(){
 
     xit('calls a success handler added by `.then`', function(){
       promiseForNum.then( setFoo10 );
-      expect( setFoo10 ).toHaveBeenCalled();
+      expect( setFoo10 ).to.have.been.called();
     });
 
     xit("calls a success handler by passing in the promise's value", function(){
       promiseForNum.then( addToFoo );
-      expect( addToFoo ).toHaveBeenCalledWith( 25 );
+      expect( addToFoo ).to.have.been.called.with.exactly( 25 );
     });
 
     xit('calls each success handler once per attachment', function(){
       promiseForNum.then( setFoo10 );
       promiseForNum.then( addToFoo );
       promiseForNum.then( addToFoo );
-      expect( setFoo10.calls.count() ).toBe( 1 );
-      expect( addToFoo.calls.count() ).toBe( 2 );
-      expect( addToFoo ).toHaveBeenCalledWith( 25 );
+      /* eslint-disable no-unused-expressions */
+      expect( setFoo10 ).to.have.been.called.once;
+      expect( addToFoo ).to.have.been.called.twice;
+      /* eslint-enable no-unused-expressions */
+      expect( addToFoo ).to.have.been.called.always.with.exactly( 25 );
     });
 
     xit('calls each success handler when added', function(){
       promiseForNum.then( setFoo10 );
-      expect( foo ).toBe( 10 );
+      expect( foo ).to.equal( 10 );
       promiseForNum.then( addToFoo );
-      expect( foo ).toBe( 35 );
+      expect( foo ).to.equal( 35 );
     });
 
   });
@@ -124,14 +127,14 @@ describe('A promise', function(){
     xit('calls that handler when fulfilled', function(){
       promiseForNum.then( setFoo10 );
       numDeferral.resolve();
-      expect( setFoo10 ).toHaveBeenCalled();
+      expect( setFoo10 ).to.have.been.called();
     });
 
     xit('calls all its success handlers in order one time when fulfilled', function(){
       promiseForNum.then( setFoo10 );
       promiseForNum.then( addToFoo );
       numDeferral.resolve( 25 );
-      expect( foo ).toBe( 35 );
+      expect( foo ).to.equal( 35 );
     });
 
   });
@@ -146,3 +149,4 @@ The `.then` method can also be called multiple times, so you can
 attach callbacks to run in different parts of your code, and
 they will all run once the promise is fulfilled.
 */
+});

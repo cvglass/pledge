@@ -7,7 +7,9 @@
     "test": "test"
   },
   "scripts": {
-    "test": "testem"
+    "test": "testem",
+    "build": "browserify vendor/deps.js -o vendor/bundle.js",
+    "postinstall": "npm run build"
   },
   "repository": {
     "type": "git",
@@ -23,6 +25,10 @@
   },
   "homepage": "https://github.com/FullstackAcademy/pledge#readme",
   "devDependencies": {
+    "browserify": "^13.1.1",
+    "chai": "^3.5.0",
+    "chai-as-promised": "^6.0.0",
+    "chai-spies": "^0.7.1",
     "testem": "^1.10.3"
   }
 }
