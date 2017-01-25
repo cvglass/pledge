@@ -16,7 +16,7 @@ $Promise.prototype.then = function(success, error){
 		errorCb : null
 	};
 
-	if(this._state === 'fulfilled'){
+	(this._state === 'fulfilled'){
 		if(typeof success === 'function'){
 			handlerGroup.successCb = success(this._value)
 		};
